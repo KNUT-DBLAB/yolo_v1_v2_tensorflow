@@ -4,6 +4,7 @@ import os
 from PIL import Image
 import scipy.misc as misc
 import scipy.io as sio
+import numpy
 
 
 OBJECT_NAMES = ["tvmonitor", "train", "sofa", "sheep", "cat", "chair", "bottle", "motorbike", "boat", "bird",
@@ -63,7 +64,19 @@ def ToScaleImg(img, tar_h, tar_w, raw_bboxes):
         y1 = tar_h / h * y1
         tar_bboxes[i, 0], tar_bboxes[i, 1] = x0, y0
         tar_bboxes[i, 2], tar_bboxes[i, 3] = x1, y1
-    scaled_img = misc.imresize(img, [tar_h, tar_w])
+
+    # print(img)
+    # print(img.shape)
+    
+    # print(tar_h)
+    # print(tar_w)
+    # scaled_img = misc.imresize(img, [tar_h, tar_w]) # https://github.com/tensorlayer/srgan/pull/179
+    scaled_img = numpy.array(Image.fromarray(img).resize((tar_h, tar_w)))
+
+    # scaled_img = sk_resize(img, (tar_h, tar_w))
+    # print(tar_h, tar_w)
+    
+    
     return scaled_img, tar_bboxes
 
 

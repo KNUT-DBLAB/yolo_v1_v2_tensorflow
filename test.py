@@ -1,16 +1,19 @@
+#%%
 from networks import vgg16
 from utils import *
 from ops import *
 from draw_bbox import draw_bbox
+import matplotlib.image as plot_img
+import matplotlib.pyplot as pyplot
 
-#
 # import os
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 BATCH_SIZE = 1
-img_path = "./VOCdevkit/VOC2007/JPEGImages/"
-xml_path = "./VOCdevkit/VOC2007/Annotations/"
+img_path = "./home/dblab/maeng_space/d_05_vgg_and_imgs/VOC2007/JPEGImages/"
+xml_path = "./home/dblab/maeng_space/d_05_vgg_and_imgs/VOC2007/Annotations/"
+path_save_01_para = "/home/dblab/maeng_space/d_05_vgg_and_imgs/save_para/"
 OBJECT_NAMES = ["tvmonitor", "train", "sofa", "sheep", "cat", "chair", "bottle", "motorbike", "boat", "bird",
                    "person", "aeroplane", "dog", "pottedplant", "cow", "bus", "diningtable", "horse", "bicycle", "car"]
 
@@ -71,19 +74,30 @@ def test(img):
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
-    saver.restore(sess, "./save_para/.\\model.ckpt")
+    saver.restore(sess, path_save_01_para + "model.ckpt")
 
     INDX_CLASS, PRED_BBOXES, SCORES_CLASS = sess.run([indx_class, pred_bboxes, scores_class], feed_dict={inputs: img[np.newaxis, :, :, :]})
     bboxes, class_num = select_bbox_again(INDX_CLASS, SCORES_CLASS, PRED_BBOXES)
+    
+    print(bboxes)
     for i in range(bboxes.shape[0]):
+        img = draw_bbox(img, np.int32(bboxes[i]), OBJECT_NAMES[class_num[i]])
         try:
             img = draw_bbox(img, np.int32(bboxes[i]), OBJECT_NAMES[class_num[i]])
+            print("check_line_02")
         except:
             continue
     Image.fromarray(np.uint8(img)).show()
+    # img_data = plot_img.imread(img)
+    pyplot.imshow(img)
+    pyplot.show()
+    
 
 
 
 if __name__ == "__main__":
-    img = np.array(Image.open("./ironman.jpg").resize([448, 448]))
+    img = np.array(Image.open("/home/dblab/maeng_space/d_05_vgg_and_imgs/VOC2007/JPEGImages/000033.jpg").resize([448, 448]))
+    # img = np.array(Image.open("./ironman.jpg").resize([448, 448]))
     test(img)
+
+# %%

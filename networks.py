@@ -1,4 +1,5 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 
 def conv(inputs, w, b, trainable=False):
@@ -43,7 +44,8 @@ def fc(name, inputs, nums_out):
 def vgg16(inputs):
     inputs = tf.reverse(inputs, [-1]) - tf.constant([103.939, 116.779, 123.68])
     inputs /= 255.0
-    para = np.load("./vgg_para/vgg16.npy", encoding="latin1").item()
+    
+    para = np.load("/home/dblab/maeng_space/d_05_vgg_and_imgs/vgg_para/vgg16.npy", encoding="latin1", allow_pickle=True).item()
     inputs = relu(conv(inputs, para["conv1_1"][0], para["conv1_1"][1]))
     inputs = relu(conv(inputs, para["conv1_2"][0], para["conv1_2"][1]))
     inputs = max_pooling(inputs)
